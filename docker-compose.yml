@@ -1,0 +1,33 @@
+version: '3.2'
+services:
+  web:
+    image: odoo:17
+    container_name: odoo
+    depends_on:
+      - db
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+      - ./enterprise:/mnt/enterprise-addons
+    env_file: odoo.env
+    secrets:
+      - postgresql_password
+    restart: always
+    ports:
+      - "8069:8069"
+  db:
+    image: postgres:15
+    env_file: odoo.env
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+    secrets:
+      - postgresql_password
+    restart: always
+volumes:
+  odoo-web-data:
+  odoo-db-data:
+
+secrets:
+  postgresql_password:
+    file: odoo_psql_pass
